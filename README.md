@@ -1,6 +1,6 @@
 # Website Redesign Planner
 
-Website Redesign Planner is a Codex skill for planning marketing website redesigns with research, competitor analysis, and client-ready design options before production build work begins.
+Website Redesign Planner is an agent skill for planning marketing website redesigns with research, competitor analysis, and client-ready design options before production build work begins.
 
 It guides a five-phase workflow that produces a Bun, SvelteKit, TypeScript, and Tailwind report app with analysis, audit findings, design-system options, homepage examples, screenshots, and a production-build brief.
 
@@ -24,17 +24,17 @@ It guides a five-phase workflow that produces a Bun, SvelteKit, TypeScript, and 
 ## Repository Contents
 
 - `SKILL.md`: main skill instructions and workflow.
-- `agents/openai.yaml`: agent display metadata and default prompt.
+- `agents/openai.yaml`: optional OpenAI/Codex display metadata and default prompt.
 - `references/`: supporting rules for research and SvelteKit setup.
 - `assets/project-design-system-skill-template.md`: template for generated project design-system skills.
 - `assets/sveltekit-report-app-template/`: starter SvelteKit report app.
 
 ## Requirements
 
-- Codex with local skills enabled.
+- An AI agent that can use local `SKILL.md`-style skills.
 - Bun for the generated redesign report app.
 - Firecrawl CLI/API setup for website and competitor research.
-- Supporting Codex skills listed below.
+- Supporting skills listed below.
 
 Install Bun:
 
@@ -68,7 +68,7 @@ bun run capture:screenshots
 
 ## Required Skills
 
-This skill coordinates other skills instead of doing every job itself. Install these before using it for a full redesign plan:
+This skill coordinates other skills instead of doing every job itself. Install these into the same global skills directory your agent uses before running a full redesign plan:
 
 - `firecrawl`: checks Firecrawl setup and supports web capture.
 - `firecrawl-search`: finds public competitors and market evidence.
@@ -84,32 +84,53 @@ This skill coordinates other skills instead of doing every job itself. Install t
 
 ### Install Skills
 
-Preferred Codex flow:
-
-```text
-Install these Codex skills: firecrawl, firecrawl-search, firecrawl-crawl, firecrawl-download, firecrawl-scrape, frontend-design, impeccable, teach-impeccable, extract, normalize, and polish.
-```
-
-Restart Codex after installing new skills.
-
-Manual flow:
+Set your agent's global skills directory first. Use the real location for the agent runtime you use.
 
 ```bash
-mkdir -p ~/.codex/skills
-cp -R /path/to/firecrawl ~/.codex/skills/
-cp -R /path/to/firecrawl-search ~/.codex/skills/
-cp -R /path/to/firecrawl-crawl ~/.codex/skills/
-cp -R /path/to/firecrawl-download ~/.codex/skills/
-cp -R /path/to/firecrawl-scrape ~/.codex/skills/
-cp -R /path/to/frontend-design ~/.codex/skills/
-cp -R /path/to/impeccable ~/.codex/skills/
-cp -R /path/to/teach-impeccable ~/.codex/skills/
-cp -R /path/to/extract ~/.codex/skills/
-cp -R /path/to/normalize ~/.codex/skills/
-cp -R /path/to/polish ~/.codex/skills/
+export AGENT_SKILLS_DIR="/path/to/your-agent/global-skills"
+mkdir -p "$AGENT_SKILLS_DIR"
 ```
 
-Each copied folder must contain its own `SKILL.md`. If your `CODEX_HOME` is not `~/.codex`, copy skills into `$CODEX_HOME/skills` instead.
+For Codex, this is usually `$CODEX_HOME/skills` or `~/.codex/skills`. Other agents may use a different global skills directory.
+
+Clone this skill into the global skills directory:
+
+```bash
+git clone https://github.com/JimmyMcBride/website-redesign-planner.git "$AGENT_SKILLS_DIR/website-redesign-planner"
+```
+
+Install or clone the required supporting skills into that same directory:
+
+```text
+firecrawl
+firecrawl-search
+firecrawl-crawl
+firecrawl-download
+firecrawl-scrape
+frontend-design
+impeccable
+teach-impeccable
+extract
+normalize
+polish
+```
+
+Each skill folder must contain its own `SKILL.md`. The final structure should look like this:
+
+```text
+<agent-global-skills-dir>/
+  website-redesign-planner/
+    SKILL.md
+  firecrawl/
+    SKILL.md
+  frontend-design/
+    SKILL.md
+  impeccable/
+    SKILL.md
+  ...
+```
+
+If your agent has a built-in skill installer, you can ask it to install the same supporting skills by name. Restart or reload your agent after adding new skills so it can discover them.
 
 Check Firecrawl after installing the Firecrawl skills:
 
@@ -119,7 +140,7 @@ firecrawl --status
 
 ## Usage
 
-Install or copy this folder into a Codex skills directory, then ask Codex to use `website-redesign-planner` for a redesign planning task.
+Install this folder in your agent's global skills directory, make sure the supporting skills are installed beside it, then ask your agent to use `website-redesign-planner` for a redesign planning task.
 
 Example:
 

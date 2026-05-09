@@ -117,9 +117,9 @@ Do not export a PDF by default. Keep the report client-ready in the SvelteKit ap
 ## Phase 5: Examples + Client Decision App
 
 1. Build `/examples` as an index of exactly four homepage demos. Each card needs a real screenshot, layout name, strategy label, and CTA to the demo route.
-2. Build four detail routes at `/examples/1` through `/examples/4`. Use distinct homepage layouts, interaction patterns, and animation concepts for each while preserving the source site's copy, media, section flow, CTA intent, and brand signals by default.
+2. Build four detail routes at `/examples/1` through `/examples/4`. Replace the blank example scaffold components; do not merely fill or theme the bundled placeholders. Each route must be designed from scratch as a distinct layout style using the source homepage's real media, copy, section intent, CTA intent, and brand signals by default.
 3. Add a shared design-system switcher. It must support all three design-system directions on every example route using `?system=<slug>` plus localStorage fallback.
-4. Render examples from shared business/content data. Vary layout, rhythm, motion, proof placement, CTA grouping, hierarchy, and small clarity improvements; do not invent new campaign language, renamed concepts, heavily rewritten copy, or dramatic repositioning unless the user explicitly asks for that.
+4. Render examples from shared source-site/business content data that you create for the project. Vary layout, rhythm, media treatment, section order, motion, proof placement, CTA grouping, hierarchy, and small clarity improvements; do not invent new campaign language, renamed concepts, heavily rewritten copy, or dramatic repositioning unless the user explicitly asks for that.
 5. Keep examples as client-review prototypes, not production code. Use source-site/business assets or generated/licensed assets where useful, and never use competitor assets as final production assets.
 6. Generate Playwright screenshots for all 12 combinations: 4 examples x 3 design systems. Save them under `static/example-screenshots/`.
 7. Add a production-build brief to `DESIGN.md`:

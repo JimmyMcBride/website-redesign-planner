@@ -204,56 +204,37 @@ export const designSystems: DesignSystem[] = [
 export const examples: Example[] = [
   {
     id: '1',
-    title: 'Command Center',
-    label: 'Decision dashboard',
-    strategy: 'Make trust, availability, and next steps visible immediately.',
-    description: 'A dashboard-style homepage for buyers who want quick proof and clear action.',
-    animation: 'Live status rail, moving scan line, and sequenced metric cards.'
+    title: 'Homepage Layout 1',
+    label: 'Replace with custom layout',
+    strategy: 'Create one distinct arrangement of the source homepage media, copy, proof, and CTAs.',
+    description: 'Blank scaffold. Replace with a fully designed homepage prototype based on captured source content.',
+    animation: 'Replace with motion concept chosen for this layout.'
   },
   {
     id: '2',
-    title: 'Proof Story',
-    label: 'Editorial proof path',
-    strategy: 'Lead with outcome storytelling before asking for the booking action.',
-    description: 'A more narrative homepage that builds confidence through staged proof.',
-    animation: 'Layered reveal panels and a rotating proof strip.'
+    title: 'Homepage Layout 2',
+    label: 'Replace with custom layout',
+    strategy: 'Create a second distinct arrangement using the same source content and a different hierarchy.',
+    description: 'Blank scaffold. Replace with a fully designed homepage prototype based on captured source content.',
+    animation: 'Replace with motion concept chosen for this layout.'
   },
   {
     id: '3',
-    title: 'Service Map',
-    label: 'Interactive coverage',
-    strategy: 'Help visitors identify service fit by location, issue, and urgency.',
-    description: 'A spatial homepage that turns service area and response flow into the core visual.',
-    animation: 'Animated route path, pulsing service markers, and step cards.'
+    title: 'Homepage Layout 3',
+    label: 'Replace with custom layout',
+    strategy: 'Create a third distinct arrangement with different section order, media treatment, and proof placement.',
+    description: 'Blank scaffold. Replace with a fully designed homepage prototype based on captured source content.',
+    animation: 'Replace with motion concept chosen for this layout.'
   },
   {
     id: '4',
-    title: 'Booking Theater',
-    label: 'Conversion stage',
-    strategy: 'Make the quote path feel premium, guided, and low friction.',
-    description: 'A cinematic homepage centered on a strong booking module and high-value proof.',
-    animation: 'Progressive booking steps, spotlight panels, and CTA lift interactions.'
+    title: 'Homepage Layout 4',
+    label: 'Replace with custom layout',
+    strategy: 'Create a fourth distinct arrangement with its own interaction pattern and conversion flow.',
+    description: 'Blank scaffold. Replace with a fully designed homepage prototype based on captured source content.',
+    animation: 'Replace with motion concept chosen for this layout.'
   }
 ];
-
-export const demoContent = {
-  heroTitle: 'Home service help that feels decided before the call.',
-  heroSubtitle:
-    'Show proof, response speed, and next steps in one confident homepage system.',
-  stats: [
-    { value: '4.9', label: 'Review signal' },
-    { value: '<24h', label: 'Response target' },
-    { value: '3-step', label: 'Quote path' }
-  ],
-  services: ['Emergency response', 'Preventive maintenance', 'Repair planning', 'Project estimates'],
-  proofPoints: [
-    'Licensed team and documented process',
-    'Clear scope before work starts',
-    'Local service-area expertise',
-    'Warranty and follow-up expectations'
-  ],
-  process: ['Match the need', 'Confirm timing', 'Send a scoped estimate', 'Book the work']
-};
 
 export const defaultSystemSlug = designSystems[0].slug;
 export const designSystemSlugs = designSystems.map((system) => system.slug);

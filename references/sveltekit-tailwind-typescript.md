@@ -62,7 +62,8 @@ DESIGN.md
 - Keep tokens in Tailwind theme CSS, CSS variables, or the repo's existing token system.
 - Use `lucide-svelte` when icon buttons or familiar symbols are needed and the dependency is acceptable.
 - Avoid one-off hard-coded colors, spacing, shadows, and radii after `DESIGN.md` exists.
-- Keep example layouts distinct while reading from shared business/content data.
+- The bundled example components are intentionally blank scaffolds. Replace them with project-specific homepage layouts; do not decorate the placeholder scaffolds or only swap in images/copy.
+- Keep all four example layouts distinct while reading from shared source-site/business content data.
 - Generate screenshots with Playwright after the design-system data and example routes are final.
 
 ## Verification

@@ -33,8 +33,8 @@ It guides a five-phase workflow that produces a Bun, SvelteKit, TypeScript, and 
 
 - An AI agent that can use local `SKILL.md`-style skills.
 - Bun for the generated redesign report app.
-- Firecrawl CLI/API setup for website and competitor research.
-- Supporting skills listed below.
+- Firecrawl CLI/API setup and Firecrawl agent skills for website and competitor research.
+- Impeccable design skills for frontend design review and polish.
 
 Install Bun:
 
@@ -68,30 +68,18 @@ bun run capture:screenshots
 
 ## Required Skills
 
-This skill coordinates other skills instead of doing every job itself. Install these into the same global skills directory your agent uses before running a full redesign plan:
+This skill coordinates other skills instead of doing every job itself. Install this skill and its supporting skills into the same global skills directory before running a full redesign plan.
 
-- `firecrawl`: checks Firecrawl setup and supports web capture.
-- `firecrawl-search`: finds public competitors and market evidence.
-- `firecrawl-crawl`: crawls source and competitor websites.
-- `firecrawl-download`: saves website pages, screenshots, and assets when needed.
-- `firecrawl-scrape`: extracts clean page content from individual URLs.
-- `frontend-design`: builds polished report and example UI.
-- `impeccable`: applies higher-quality frontend design standards.
-- `teach-impeccable`: records project design context for later UI work.
-- `extract`: turns repeated UI patterns into reusable components and tokens.
-- `normalize`: keeps generated design systems consistent.
-- `polish`: performs final visual and interaction cleanup.
+Use `~/.agents/skills` as the default global skills directory. It works well for shared agent skills across tools that support `.agents`-style skills.
 
 ### Install Skills
 
-Set your agent's global skills directory first. Use the real location for the agent runtime you use.
+Create the global skills directory:
 
 ```bash
-export AGENT_SKILLS_DIR="/path/to/your-agent/global-skills"
+export AGENT_SKILLS_DIR="$HOME/.agents/skills"
 mkdir -p "$AGENT_SKILLS_DIR"
 ```
-
-For Codex, this is usually `$CODEX_HOME/skills` or `~/.codex/skills`. Other agents may use a different global skills directory.
 
 Clone this skill into the global skills directory:
 
@@ -99,44 +87,55 @@ Clone this skill into the global skills directory:
 git clone https://github.com/JimmyMcBride/website-redesign-planner.git "$AGENT_SKILLS_DIR/website-redesign-planner"
 ```
 
-Install or clone the required supporting skills into that same directory:
+Install Firecrawl CLI and its agent skills from <https://github.com/firecrawl/cli/>.
 
-```text
-firecrawl
-firecrawl-search
-firecrawl-crawl
-firecrawl-download
-firecrawl-scrape
-frontend-design
-impeccable
-teach-impeccable
-extract
-normalize
-polish
+The Firecrawl install provides the web research skills this planner expects, including search, scrape, crawl, map, download, and browser-style web work.
+
+Common Firecrawl setup:
+
+```bash
+npm install -g firecrawl-cli
+firecrawl setup skills
+firecrawl --status
 ```
 
-Each skill folder must contain its own `SKILL.md`. The final structure should look like this:
+Or use Firecrawl's one-command setup from its README:
+
+```bash
+npx -y firecrawl-cli init -y --browser
+```
+
+Install Impeccable from <https://github.com/pbakaus/impeccable>.
+
+Impeccable provides the design-quality skill set this planner uses for frontend direction, audits, normalization, extraction, and polish. Follow its README for your agent. For `.agents`-style global installs, copy its skills into `~/.agents/skills`.
+
+Common Impeccable setup:
+
+```bash
+git clone https://github.com/pbakaus/impeccable.git /tmp/impeccable
+cp -R /tmp/impeccable/dist/agents/.agents/skills/* "$AGENT_SKILLS_DIR/"
+```
+
+After setup, your global skills directory should include this planner plus Firecrawl and Impeccable skills:
 
 ```text
-<agent-global-skills-dir>/
+~/.agents/skills/
   website-redesign-planner/
     SKILL.md
-  firecrawl/
-    SKILL.md
-  frontend-design/
+  firecrawl*/
     SKILL.md
   impeccable/
     SKILL.md
-  ...
 ```
 
-If your agent has a built-in skill installer, you can ask it to install the same supporting skills by name. Restart or reload your agent after adding new skills so it can discover them.
+Depending on your Impeccable install, related commands or skills may appear as separate folders such as `audit`, `extract`, `normalize`, or `polish`. That is fine as long as your agent can discover them.
 
-Check Firecrawl after installing the Firecrawl skills:
+Before running the planner, confirm your agent can see these capabilities or close equivalents:
 
-```bash
-firecrawl --status
-```
+- Firecrawl web research: setup check, search, scrape, crawl, download, map, and browser-style interaction.
+- Impeccable design workflow: frontend direction, design context, audit, extraction, normalization, and polish.
+
+Restart or reload your agent after adding new skills so it can discover them.
 
 ## Usage
 

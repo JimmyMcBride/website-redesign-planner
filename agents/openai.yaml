@@ -1,0 +1,4 @@
+interface:
+  display_name: "Website Redesign Planner"
+  short_description: "Research, plan, and build a SvelteKit client report app with animated homepage examples."
+  default_prompt: "Use website-redesign-planner to plan this website with competitive research, then produce a client-ready Bun/SvelteKit/TypeScript/Tailwind report app with Analysis, Audit, Design Systems, and Examples sections. Include 3 tailored design-system options, 4 distinct animated homepage demos, design-system switching across demos, real Playwright screenshots for example cards, and a production-build brief."

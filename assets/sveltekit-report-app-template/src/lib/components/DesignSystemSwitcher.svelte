@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
   import { page } from '$app/state';
-  import { Check } from 'lucide-svelte';
   import { applyDesignSystem, initializeDesignSystem, selectedSystemSlug } from '$lib/design-system-state';
   import { designSystems } from '$lib/report-data';
 
@@ -70,9 +69,6 @@
         >
           <span class="system-tab__swatch" aria-hidden="true"></span>
           <span class="system-tab__name">{system.name}</span>
-          {#if isSelected}
-            <Check class="system-tab__check" size={15} aria-hidden="true" />
-          {/if}
         </button>
         <div class="system-tooltip" id={tooltipId} role="tooltip">
           <strong>{system.name}</strong>
@@ -139,7 +135,7 @@
     display: grid;
     width: 100%;
     min-height: 3.25rem;
-    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     gap: 0.45rem;
     border: 1px solid transparent;
@@ -190,10 +186,6 @@
     font-size: 0.75rem;
     font-weight: 850;
     line-height: 1.08;
-  }
-
-  .system-tab__check {
-    justify-self: end;
   }
 
   .system-tooltip {
@@ -323,8 +315,5 @@
       text-align: center;
     }
 
-    .system-tab__check {
-      display: none;
-    }
   }
 </style>

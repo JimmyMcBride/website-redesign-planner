@@ -1,5 +1,7 @@
 # Website Redesign Planner
 
+![Website Redesign Planner workflow](assets/readme/workflow.png)
+
 Website Redesign Planner is an agent skill for planning marketing website redesigns with research, competitor analysis, and client-ready design options before production build work begins.
 
 It guides a five-phase workflow that produces a Bun, SvelteKit, TypeScript, and Tailwind report app with analysis, audit findings, design-system options, homepage examples, screenshots, and a production-build brief.

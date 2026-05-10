@@ -74,6 +74,13 @@ Proceed with reasonable defaults when possible. Ask only when missing informatio
 
 Create or update the SvelteKit report app. For fresh projects, copy `assets/sveltekit-report-app-template/` into the project root, then replace the sample data in `src/lib/report-data.ts` with research-backed content.
 
+Run a homepage Lighthouse capture as part of the audit workflow:
+
+- set `reportMeta.sourceSite.url` in `src/lib/report-data.ts`
+- run `bun run capture:lighthouse`
+- keep the full JSON artifact at `research/lighthouse/homepage.report.json`
+- use `src/lib/content/lighthouse-homepage.json` as the normalized UI summary artifact
+
 The Analysis section at `/` must include:
 
 - executive summary and recommended positioning
@@ -83,7 +90,7 @@ The Analysis section at `/` must include:
 - prioritized rebuild strategy backed by captured evidence
 - limitations section for missing or low-confidence data
 
-The Audit section at `/audit` must include source-site findings, UX issues, conversion gaps, content gaps, technical/SEO observations, accessibility notes, and prioritized fixes.
+The Audit section at `/audit` must include source-site findings, UX issues, conversion gaps, content gaps, technical/SEO observations, accessibility notes, prioritized fixes, and a dedicated Lighthouse snapshot for the homepage with category scores, key lab metrics, capture metadata, and top technical opportunities.
 
 Do not export a PDF by default. Keep the report client-ready in the SvelteKit app unless the user explicitly asks for another format.
 
@@ -130,6 +137,7 @@ Do not export a PDF by default. Keep the report client-ready in the SvelteKit ap
 8. When manual client feedback revises a direction, update shared app data, `DESIGN.md`, `.impeccable.md`, the project-local design-system skill, screenshots, and handoff notes together so documentation and demos stay aligned.
 9. Run app checks:
    - `bun install`
+   - `bun run capture:lighthouse`
    - `bun run check`
    - `bun run build`
    - `bun run capture:screenshots`

@@ -19,7 +19,7 @@ It guides a five-phase workflow that produces a Bun, SvelteKit, TypeScript, and 
 
 1. Gather source-site or business context.
 2. Research and rank relevant competitors.
-3. Build the analysis and audit report.
+3. Build the analysis and audit report, including a homepage Lighthouse snapshot.
 4. Plan sitemap, page structure, and design-system options.
 5. Create homepage examples, screenshots, and handoff notes.
 
@@ -63,6 +63,7 @@ bun run dev
 Useful verification commands:
 
 ```bash
+bun run capture:lighthouse
 bun run check
 bun run build
 bun run capture:screenshots

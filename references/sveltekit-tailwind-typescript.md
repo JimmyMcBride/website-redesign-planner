@@ -48,7 +48,7 @@ DESIGN.md
 ## Route Contract
 
 - `/` is Analysis.
-- `/audit` is the source-site audit.
+- `/audit` is the source-site audit and should include a dedicated Lighthouse snapshot for the homepage.
 - `/design-systems` compares exactly three design-system directions.
 - `/examples` lists exactly four homepage demo cards with screenshots.
 - `/examples/1` through `/examples/4` render the four animated homepage demos.
@@ -72,6 +72,7 @@ Run available repo commands in this order when applicable:
 
 ```bash
 bun install
+bun run capture:lighthouse
 bun run check
 bun run test
 bun run build

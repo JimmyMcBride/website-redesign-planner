@@ -29,11 +29,29 @@ export type Example = {
   animation: string;
 };
 
-export const reportMeta = {
+export type SourceSite = {
+  url: string;
+  lastAuditedAt: string;
+};
+
+export type ReportMeta = {
+  businessName: string;
+  market: string;
+  preparedFor: string;
+  reportDate: string;
+  summary: string;
+  sourceSite: SourceSite;
+};
+
+export const reportMeta: ReportMeta = {
   businessName: 'Acme Home Services',
   market: 'Metro area residential services',
   preparedFor: 'Client decision review',
   reportDate: 'Replace with capture date',
+  sourceSite: {
+    url: 'https://example.com/',
+    lastAuditedAt: 'Not captured yet'
+  },
   summary:
     'A client-ready research app that turns competitive evidence into a sharper homepage strategy, design-system choice, and four reviewable homepage directions.'
 };

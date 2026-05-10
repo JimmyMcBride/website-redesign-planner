@@ -20,7 +20,7 @@ The report app ships with three editable options in `src/lib/report-data.ts`:
 ## Page System
 
 - `/`: competitive analysis, positioning, market signals, sources, and limits
-- `/audit`: source-site audit findings and rebuild acceptance criteria
+- `/audit`: source-site audit findings, Lighthouse homepage metrics, and rebuild acceptance criteria
 - `/design-systems`: three design-system directions with tokens and component rules
 - `/examples`: four homepage demo cards using real screenshots
 - `/examples/1` through `/examples/4`: animated homepage demos with `?system=<slug>` switching

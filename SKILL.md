@@ -78,8 +78,10 @@ Run a homepage Lighthouse capture as part of the audit workflow:
 
 - set `reportMeta.sourceSite.url` in `src/lib/report-data.ts`
 - run `bun run capture:lighthouse`
+- if bundled Chromium cannot complete the capture, retry with a local Chrome binary, for example `CHROME_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" bun run capture:lighthouse`
 - keep the full JSON artifact at `research/lighthouse/homepage.report.json`
 - use `src/lib/content/lighthouse-homepage.json` as the normalized UI summary artifact
+- if Lighthouse reaches the page but fails during controlled navigation, preserve the failed artifact and show the failure state honestly in `/audit` rather than fabricating category scores
 
 The Analysis section at `/` must include:
 
@@ -90,7 +92,7 @@ The Analysis section at `/` must include:
 - prioritized rebuild strategy backed by captured evidence
 - limitations section for missing or low-confidence data
 
-The Audit section at `/audit` must include source-site findings, UX issues, conversion gaps, content gaps, technical/SEO observations, accessibility notes, prioritized fixes, and a dedicated Lighthouse snapshot for the homepage with category scores, key lab metrics, capture metadata, and top technical opportunities.
+The Audit section at `/audit` must include source-site findings, UX issues, conversion gaps, content gaps, technical/SEO observations, accessibility notes, prioritized fixes, and a dedicated Lighthouse snapshot for the homepage with category scores, key lab metrics, capture metadata, and top technical opportunities. The Lighthouse snapshot must use the bundled responsive audit layout: container-aware score/metric/opportunity grids, cleaned Lighthouse markdown descriptions, graceful failure state, and metric-specific good/needs-improvement/poor colors for key lab metric values.
 
 Do not export a PDF by default. Keep the report client-ready in the SvelteKit app unless the user explicitly asks for another format.
 
@@ -125,7 +127,7 @@ Do not export a PDF by default. Keep the report client-ready in the SvelteKit ap
 
 1. Build `/examples` as an index of exactly four homepage demos. Each card needs a real screenshot, layout name, strategy label, and CTA to the demo route.
 2. Build four detail routes at `/examples/1` through `/examples/4`. Replace the blank example scaffold components; do not merely fill or theme the bundled placeholders. Each route must be designed from scratch as a distinct layout style using the source homepage's real media, copy, section intent, CTA intent, and brand signals by default.
-3. Add a shared design-system switcher. It must support all three design-system directions on every example route using `?system=<slug>` plus localStorage fallback.
+3. Add a shared design-system switcher. It must support all three design-system directions on every example route using `?system=<slug>` plus localStorage fallback. Do not add hover tooltips to the switcher; the non-compact selected-system detail panel is the canonical place for rationale, motion, and component information.
 4. Render examples from shared source-site/business content data that you create for the project. Vary layout, rhythm, media treatment, section order, motion, proof placement, CTA grouping, hierarchy, and small clarity improvements; do not invent new campaign language, renamed concepts, heavily rewritten copy, or dramatic repositioning unless the user explicitly asks for that.
 5. Keep examples as client-review prototypes, not production code. Use source-site/business assets or generated/licensed assets where useful, and never use competitor assets as final production assets.
 6. Generate Playwright screenshots for all 12 combinations: 4 examples x 3 design systems. Save them under `static/example-screenshots/`.

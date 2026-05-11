@@ -21,12 +21,17 @@ type LighthouseOpportunity = {
 };
 
 export type LighthouseSummary = {
+  status: 'success' | 'failed';
   url: string;
   capturedAt: string;
   formFactor: string;
   scores: LighthouseCategoryScores;
   metrics: LighthouseMetrics;
   opportunities: LighthouseOpportunity[];
+  runtimeError?: {
+    code: string;
+    message: string;
+  };
 };
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -74,6 +79,13 @@ export function parseLighthouseSummary(value: unknown): LighthouseSummary | null
   }
 
   if (
+    value.status !== 'success' &&
+    value.status !== 'failed'
+  ) {
+    return null;
+  }
+
+  if (
     typeof value.url !== 'string' ||
     typeof value.capturedAt !== 'string' ||
     typeof value.formFactor !== 'string' ||
@@ -86,12 +98,22 @@ export function parseLighthouseSummary(value: unknown): LighthouseSummary | null
   }
 
   return {
+    status: value.status,
     url: value.url,
     capturedAt: value.capturedAt,
     formFactor: value.formFactor,
     scores: value.scores,
     metrics: value.metrics,
-    opportunities: value.opportunities
+    opportunities: value.opportunities,
+    runtimeError:
+      isRecord(value.runtimeError) &&
+      typeof value.runtimeError.code === 'string' &&
+      typeof value.runtimeError.message === 'string'
+        ? {
+            code: value.runtimeError.code,
+            message: value.runtimeError.message
+          }
+        : undefined
   };
 }
 

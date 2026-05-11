@@ -4,16 +4,19 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite dev",
-    "build": "vite build",
-    "preview": "vite preview",
-    "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
+    "dev": "bun --bun vite dev",
+    "build": "bun --bun vite build",
+    "preview": "bun --bun vite preview",
+    "check": "bun --bun svelte-kit sync && bun --bun svelte-check --tsconfig ./tsconfig.json",
     "test": "bun run check",
     "capture:lighthouse": "playwright install chromium && bun run scripts/capture-lighthouse.ts",
     "capture:screenshots": "playwright install chromium && bun run scripts/capture-screenshots.ts"
   },
   "dependencies": {
     "lucide-svelte": "^0.468.0"
+  },
+  "overrides": {
+    "rollup": "npm:@rollup/wasm-node@^4.60.3"
   },
   "devDependencies": {
     "@sveltejs/adapter-static": "^3.0.0",
@@ -23,6 +26,7 @@
     "@types/node": "^24.0.0",
     "lighthouse": "^13.3.0",
     "playwright": "^1.55.0",
+    "rollup": "npm:@rollup/wasm-node@^4.60.3",
     "svelte": "^5.0.0",
     "svelte-check": "^4.0.0",
     "tailwindcss": "^4.0.0",

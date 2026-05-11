@@ -1,5 +1,5 @@
 import { spawn } from 'node:child_process';
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { chromium } from 'playwright';
 import { reportMeta } from '../src/lib/report-data';
@@ -25,6 +25,10 @@ type LighthouseReport = {
   };
   categories?: Record<string, { score?: number | null }>;
   audits?: Record<string, LighthouseAudit>;
+  runtimeError?: {
+    code?: string;
+    message?: string;
+  };
 };
 
 const rawReportPath = resolve('research/lighthouse/homepage.report.json');
@@ -38,7 +42,7 @@ if (!/^https?:\/\//.test(url)) {
 }
 
 async function runLighthouse(targetUrl: string) {
-  const chromePath = chromium.executablePath();
+  const chromePath = process.env.CHROME_PATH?.trim() || chromium.executablePath();
   const binary =
     process.platform === 'win32'
       ? resolve('node_modules/.bin/lighthouse.cmd')
@@ -136,7 +140,16 @@ function getOpportunities(report: LighthouseReport): LighthouseSummary['opportun
 }
 
 function normalizeReport(report: LighthouseReport): LighthouseSummary {
+  const runtimeError =
+    typeof report.runtimeError?.code === 'string' && typeof report.runtimeError?.message === 'string'
+      ? {
+          code: report.runtimeError.code,
+          message: report.runtimeError.message
+        }
+      : undefined;
+
   return {
+    status: runtimeError ? 'failed' : 'success',
     url: report.finalUrl ?? report.requestedUrl ?? url,
     capturedAt: report.fetchTime ?? new Date().toISOString(),
     formFactor: report.configSettings?.formFactor ?? 'mobile',
@@ -154,14 +167,52 @@ function normalizeReport(report: LighthouseReport): LighthouseSummary {
       cumulativeLayoutShift: getShiftMetric(report, 'cumulative-layout-shift'),
       timeToFirstByteMs: getMetric(report, 'server-response-time', 'network-server-latency', 'document-latency')
     },
-    opportunities: getOpportunities(report)
+    opportunities: runtimeError
+      ? [
+          {
+            title: 'Lighthouse source-site capture did not complete',
+            displayValue: runtimeError.code,
+            description: runtimeError.message
+          }
+        ]
+      : getOpportunities(report),
+    runtimeError
   };
 }
 
 await mkdir(resolve('research/lighthouse'), { recursive: true });
 await mkdir(resolve('src/lib/content'), { recursive: true });
+await rm(rawReportPath, { force: true });
 
-await runLighthouse(url);
+try {
+  await runLighthouse(url);
+} catch (error) {
+  console.warn(error instanceof Error ? error.message : String(error));
+
+  try {
+    await readFile(rawReportPath, 'utf8');
+  } catch {
+    await writeFile(
+      rawReportPath,
+      `${JSON.stringify(
+        {
+          requestedUrl: url,
+          finalUrl: url,
+          fetchTime: new Date().toISOString(),
+          configSettings: { formFactor: 'mobile' },
+          categories: {},
+          audits: {},
+          runtimeError: {
+            code: 'LIGHTHOUSE_CAPTURE_FAILED',
+            message: error instanceof Error ? error.message : String(error)
+          }
+        },
+        null,
+        2
+      )}\n`
+    );
+  }
+}
 
 const rawReport = JSON.parse(await readFile(rawReportPath, 'utf8')) as LighthouseReport;
 const summary = normalizeReport(rawReport);

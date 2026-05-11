@@ -3,7 +3,11 @@
   import { lighthouseSummary } from '$lib/lighthouse-summary';
   import { auditFindings, reportMeta } from '$lib/report-data';
 
-  const scoreCards = lighthouseSummary
+  type MetricRating = 'Good' | 'Needs improvement' | 'Poor';
+
+  const lighthouseSucceeded = lighthouseSummary?.status === 'success';
+
+  const scoreCards = lighthouseSucceeded && lighthouseSummary
     ? [
         { label: 'Performance', value: lighthouseSummary.scores.performance },
         { label: 'Accessibility', value: lighthouseSummary.scores.accessibility },
@@ -12,15 +16,46 @@
       ]
     : [];
 
-  const metricCards = lighthouseSummary
+  const metricCards = lighthouseSucceeded && lighthouseSummary
     ? [
-        { label: 'First Contentful Paint', value: formatMilliseconds(lighthouseSummary.metrics.firstContentfulPaintMs) },
-        { label: 'Largest Contentful Paint', value: formatMilliseconds(lighthouseSummary.metrics.largestContentfulPaintMs) },
-        { label: 'Speed Index', value: formatMilliseconds(lighthouseSummary.metrics.speedIndexMs) },
-        { label: 'Total Blocking Time', value: formatMilliseconds(lighthouseSummary.metrics.totalBlockingTimeMs) },
-        { label: 'Cumulative Layout Shift', value: formatShift(lighthouseSummary.metrics.cumulativeLayoutShift) },
-        { label: 'Time to First Byte', value: formatMilliseconds(lighthouseSummary.metrics.timeToFirstByteMs) }
+        {
+          label: 'First Contentful Paint',
+          value: formatMilliseconds(lighthouseSummary.metrics.firstContentfulPaintMs),
+          rating: rateMetric(lighthouseSummary.metrics.firstContentfulPaintMs, 1800, 3000)
+        },
+        {
+          label: 'Largest Contentful Paint',
+          value: formatMilliseconds(lighthouseSummary.metrics.largestContentfulPaintMs),
+          rating: rateMetric(lighthouseSummary.metrics.largestContentfulPaintMs, 2500, 4000)
+        },
+        {
+          label: 'Speed Index',
+          value: formatMilliseconds(lighthouseSummary.metrics.speedIndexMs),
+          rating: rateMetric(lighthouseSummary.metrics.speedIndexMs, 3400, 5800)
+        },
+        {
+          label: 'Total Blocking Time',
+          value: formatMilliseconds(lighthouseSummary.metrics.totalBlockingTimeMs),
+          rating: rateMetric(lighthouseSummary.metrics.totalBlockingTimeMs, 200, 600)
+        },
+        {
+          label: 'Cumulative Layout Shift',
+          value: formatShift(lighthouseSummary.metrics.cumulativeLayoutShift),
+          rating: rateMetric(lighthouseSummary.metrics.cumulativeLayoutShift, 0.1, 0.25)
+        },
+        {
+          label: 'Time to First Byte',
+          value: formatMilliseconds(lighthouseSummary.metrics.timeToFirstByteMs),
+          rating: rateMetric(lighthouseSummary.metrics.timeToFirstByteMs, 800, 1800)
+        }
       ]
+    : [];
+
+  const opportunityCards = lighthouseSucceeded && lighthouseSummary
+    ? lighthouseSummary.opportunities.map((opportunity) => ({
+        ...opportunity,
+        description: cleanLighthouseDescription(opportunity.description)
+      }))
     : [];
 
   const auditUrl = lighthouseSummary?.url ?? reportMeta.sourceSite.url;
@@ -39,6 +74,22 @@
     return Number.isNaN(date.getTime()) ? value : date.toLocaleString();
   }
 
+  function cleanLighthouseDescription(value: string): string {
+    return value.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1').replace(/\s+/g, ' ').trim();
+  }
+
+  function rateMetric(value: number, goodMax: number, poorMin: number): MetricRating {
+    if (value <= goodMax) {
+      return 'Good';
+    }
+
+    if (value <= poorMin) {
+      return 'Needs improvement';
+    }
+
+    return 'Poor';
+  }
+
   function scoreColor(score: number): string {
     if (score >= 90) {
       return '#0f6a59';
@@ -49,6 +100,18 @@
     }
 
     return '#b34e2b';
+  }
+
+  function metricColor(rating: MetricRating): string {
+    if (rating === 'Good') {
+      return scoreColor(90);
+    }
+
+    if (rating === 'Needs improvement') {
+      return scoreColor(50);
+    }
+
+    return scoreColor(0);
   }
 </script>
 
@@ -65,7 +128,7 @@
     </p>
   </div>
 
-  <section class="surface grid gap-5 p-5">
+  <section class="lighthouse-panel surface grid gap-5 p-5">
     <div class="flex flex-wrap items-start justify-between gap-4">
       <div class="grid gap-3">
         <div class="flex items-center gap-3">
@@ -89,8 +152,18 @@
       </div>
     </div>
 
-    {#if lighthouseSummary}
-      <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+    {#if lighthouseSummary && lighthouseSummary.status === 'failed'}
+      <div class="soft-surface grid gap-3 p-5">
+        <p class="text-lg font-black">Lighthouse reached the source homepage but the browser capture did not complete.</p>
+        <p style="color: var(--system-muted)">
+          Status: {lighthouseSummary.runtimeError?.code ?? 'Capture failed'}. {lighthouseSummary.runtimeError?.message ?? 'See the raw Lighthouse artifact for details.'}
+        </p>
+        <p class="text-sm" style="color: var(--system-muted)">
+          The raw artifact is preserved at `research/lighthouse/homepage.report.json`. Retry with a local Chrome binary through `CHROME_PATH` when bundled Chromium cannot complete the run.
+        </p>
+      </div>
+    {:else if lighthouseSummary}
+      <div class="lighthouse-score-grid">
         {#each scoreCards as score}
           <article class="soft-surface grid gap-2 p-4">
             <p class="eyebrow">{score.label}</p>
@@ -100,17 +173,20 @@
         {/each}
       </div>
 
-      <div class="grid gap-4 lg:grid-cols-[1.3fr_1fr]">
+      <div class="lighthouse-detail-grid">
         <section class="grid gap-4">
           <div class="flex items-center gap-3">
             <CheckCircle2 size={22} style="color: var(--system-primary)" aria-hidden="true" />
             <h3 class="text-xl font-black">Key lab metrics</h3>
           </div>
-          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div class="metric-grid">
             {#each metricCards as metric}
-              <article class="card grid gap-1 p-4">
-                <p class="text-sm font-bold">{metric.label}</p>
-                <p class="text-2xl font-black">{metric.value}</p>
+              <article class="metric-card card">
+                <p class="metric-card__label">{metric.label}</p>
+                <p class="metric-card__value" style={`color: ${metricColor(metric.rating)}`} title={metric.rating}>
+                  {metric.value}
+                  <span class="sr-only">, {metric.rating}</span>
+                </p>
               </article>
             {/each}
           </div>
@@ -121,17 +197,17 @@
             <Wrench size={22} style="color: var(--system-primary)" aria-hidden="true" />
             <h3 class="text-xl font-black">Top technical opportunities</h3>
           </div>
-          <div class="grid gap-3">
-            {#if lighthouseSummary.opportunities.length > 0}
-              {#each lighthouseSummary.opportunities as opportunity}
-                <article class="card grid gap-2 p-4">
-                  <div class="flex items-start justify-between gap-3">
+          <div class="opportunity-list">
+            {#if opportunityCards.length > 0}
+              {#each opportunityCards as opportunity}
+                <article class="opportunity-card card grid gap-2 p-4">
+                  <div class="opportunity-card__header">
                     <h4 class="font-black">{opportunity.title}</h4>
-                    <span class="rounded-md px-2 py-1 text-xs font-black" style="background: var(--system-surface-alt); color: var(--system-primary)">
+                    <span class="opportunity-card__badge rounded-md px-2 py-1 text-xs font-black" style="background: var(--system-surface-alt); color: var(--system-primary)">
                       {opportunity.displayValue}
                     </span>
                   </div>
-                  <p class="text-sm" style="color: var(--system-muted)">{opportunity.description}</p>
+                  <p class="opportunity-card__description text-sm" style="color: var(--system-muted)">{opportunity.description}</p>
                 </article>
               {/each}
             {:else}
@@ -184,3 +260,105 @@
     </div>
   </section>
 </section>
+
+<style>
+  .lighthouse-panel {
+    container-type: inline-size;
+  }
+
+  .lighthouse-score-grid,
+  .metric-grid,
+  .opportunity-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .lighthouse-score-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 10.5rem), 1fr));
+  }
+
+  .lighthouse-detail-grid {
+    display: grid;
+    gap: 1.25rem;
+  }
+
+  .metric-grid {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr));
+  }
+
+  .metric-card {
+    min-width: 0;
+    display: grid;
+    min-height: 7.75rem;
+    align-content: space-between;
+    gap: 1.15rem;
+    padding: 1rem;
+  }
+
+  .metric-card__label {
+    max-width: 15ch;
+    margin: 0;
+    color: var(--system-ink);
+    font-size: 0.9rem;
+    font-weight: 850;
+    line-height: 1.15;
+  }
+
+  .metric-card__value {
+    margin: 0;
+    font-size: clamp(1.5rem, 5cqw, 2rem);
+    font-weight: 950;
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+    white-space: nowrap;
+  }
+
+  .opportunity-list {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr));
+  }
+
+  .opportunity-card {
+    min-width: 0;
+  }
+
+  .opportunity-card__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.55rem 0.75rem;
+    min-width: 0;
+  }
+
+  .opportunity-card__header h4 {
+    flex: 1 1 13rem;
+    min-width: 0;
+  }
+
+  .opportunity-card__badge {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .opportunity-card__description {
+    overflow-wrap: anywhere;
+  }
+
+  @container (max-width: 33rem) {
+    .metric-card {
+      min-height: auto;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 0.75rem;
+    }
+
+    .metric-card__label {
+      max-width: none;
+    }
+
+    .metric-card__value {
+      font-size: clamp(1.35rem, 6cqw, 1.65rem);
+      text-align: right;
+    }
+  }
+</style>

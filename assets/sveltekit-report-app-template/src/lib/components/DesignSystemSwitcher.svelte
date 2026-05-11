@@ -13,7 +13,6 @@
   const selectedSystem = $derived(
     designSystems.find((system) => system.slug === $selectedSystemSlug) ?? designSystems[0]
   );
-  const idPrefix = $derived(compact ? 'compact-design-system' : 'design-system');
 
   async function choose(slug: string) {
     applyDesignSystem(slug);
@@ -56,26 +55,18 @@
   <div class="system-tabs" role="tablist" tabindex="-1" aria-label="Choose design system" aria-orientation="horizontal" onkeydown={handleKeydown}>
     {#each designSystems as system}
       {@const isSelected = $selectedSystemSlug === system.slug}
-      {@const tooltipId = `${idPrefix}-${system.slug}-tip`}
       <div class="tab-shell">
         <button
           type="button"
           class={`system-tab ${isSelected ? 'is-selected' : ''}`}
           role="tab"
           aria-selected={isSelected}
-          aria-describedby={tooltipId}
           onclick={() => void choose(system.slug)}
           style={`--swatch-primary: ${system.tokens.primary}; --swatch-secondary: ${system.tokens.secondary}; --swatch-accent: ${system.tokens.accent}`}
         >
           <span class="system-tab__swatch" aria-hidden="true"></span>
           <span class="system-tab__name">{system.name}</span>
         </button>
-        <div class="system-tooltip" id={tooltipId} role="tooltip">
-          <strong>{system.name}</strong>
-          <span>{system.rationale}</span>
-          <span><b>Motion:</b> {system.motion}</span>
-          <span><b>Components:</b> {system.components.join(', ')}</span>
-        </div>
       </div>
     {/each}
   </div>
@@ -186,62 +177,6 @@
     font-size: 0.75rem;
     font-weight: 850;
     line-height: 1.08;
-  }
-
-  .system-tooltip {
-    position: absolute;
-    z-index: 40;
-    top: calc(100% + 0.6rem);
-    left: 0;
-    display: grid;
-    width: max-content;
-    max-width: min(24rem, calc(100vw - 2rem));
-    gap: 0.45rem;
-    border: 1px solid color-mix(in srgb, var(--system-primary) 26%, var(--system-line));
-    border-radius: 8px;
-    background: color-mix(in srgb, var(--system-surface) 96%, var(--system-bg));
-    box-shadow: var(--system-shadow);
-    color: var(--system-ink);
-    opacity: 0;
-    padding: 0.8rem;
-    pointer-events: none;
-    text-align: left;
-    transform: translateY(0.35rem);
-    transition:
-      opacity 150ms ease,
-      transform 150ms ease;
-  }
-
-  .system-tooltip span {
-    color: var(--system-muted);
-    font-size: 0.78rem;
-    line-height: 1.35;
-  }
-
-  .system-tooltip strong {
-    font-size: 0.86rem;
-    line-height: 1.2;
-  }
-
-  .tab-shell:hover .system-tooltip,
-  .system-tab:focus-visible + .system-tooltip {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  .tab-shell:nth-child(2) .system-tooltip {
-    left: 50%;
-    transform: translate(-50%, 0.35rem);
-  }
-
-  .tab-shell:nth-child(2):hover .system-tooltip,
-  .tab-shell:nth-child(2) .system-tab:focus-visible + .system-tooltip {
-    transform: translate(-50%, 0);
-  }
-
-  .tab-shell:nth-child(3) .system-tooltip {
-    right: 0;
-    left: auto;
   }
 
   .selected-system-detail {
